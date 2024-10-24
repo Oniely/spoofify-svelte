@@ -1,12 +1,15 @@
-export const downloadBlob = (blob: Blob, name: string) => {
-	if (!blob) return
+export const downloadBlob = (blob: Blob | null, name: string) => {
+	if (!blob) return null
 
-	const url = window.URL.createObjectURL(new Blob([blob]))
+	const mimeType = name.endsWith('.m4a') ? 'audio/mp4' : 'audio/mpeg'
+
+	const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
 	const link = document.createElement('a')
 	link.href = url
 	link.setAttribute('download', name)
 	document.body.appendChild(link)
 	link.click()
+	window.URL.revokeObjectURL(url)
 }
 
 export const detectSpotifyLink = (url: string) => {

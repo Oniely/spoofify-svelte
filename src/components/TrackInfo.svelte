@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Track } from '$lib/utils/types'
+	import DownloadTrack from './buttons/DownloadTrack.svelte'
 	import PlayTrack from './buttons/PlayTrack.svelte'
 
 	export let track: Track
@@ -53,7 +54,7 @@
 		<div class="flex items-center gap-2">
 			<span class="mr-1 text-xs text-white/50 md:mr-2 md:text-sm">{durationString}</span>
 			<PlayTrack audioUrl={track.preview_url} />
-			<!-- <DownloadTrack {track} /> -->
+			<DownloadTrack {track} />
 		</div>
 	</div>
 </div>

@@ -5,4 +5,8 @@
 	export let data: PageData
 </script>
 
-<TrackInfo track={data.track} />
+<div
+	class="flex w-full flex-col gap-5 rounded-xl border border-white/10 bg-white/5 p-5 text-text backdrop-blur-md"
+>
+	<TrackInfo track={data.track} />
+</div>

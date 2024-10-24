@@ -10,4 +10,12 @@ declare global {
 	}
 }
 
-export {};
+declare module 'youtube-sr' {
+	const ytSearch: {
+		default: any
+		search: (query: string, options: { type: string; limit: number }) => Promise<any>
+	}
+	export = ytSearch
+}
+
+export {}

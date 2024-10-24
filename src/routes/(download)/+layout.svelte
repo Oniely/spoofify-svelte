@@ -1,6 +1,5 @@
 <script lang="ts">
 	import HomeButton from '$components/HomeButton.svelte'
-	import PlaylistInfo from '$components/PlaylistInfo.svelte'
 	import Search from '$components/Search.svelte'
 </script>
 

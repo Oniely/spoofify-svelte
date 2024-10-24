@@ -40,21 +40,21 @@ function createPlayerStore() {
 	}
 
 	const togglePlay = async (audioUrl: string) => {
-		const currentState = get(store)
+		const state = get(store)
 
-		if (!currentState.audio && currentState.trackId !== audioUrl) {
+		if (!state.audio && state.trackId !== audioUrl) {
 			await loadAudio(audioUrl)
 			return
 		}
 
-		if (currentState.playing) {
-			currentState.audio!.pause()
+		if (state.playing) {
+			state.audio!.pause()
 			store.update((state) => ({
 				...state,
 				playing: false
 			}))
 		} else {
-			currentState.audio!.play()
+			state.audio!.play()
 			store.update((state) => ({
 				...state,
 				playing: true
@@ -63,8 +63,8 @@ function createPlayerStore() {
 	}
 
 	const isTrackPlaying = (otherTrackId: string): boolean => {
-		const currentState = get(store)
-		return currentState.trackId === otherTrackId && currentState.playing
+		const state = get(store)
+		return state.trackId === otherTrackId && state.playing
 	}
 
 	return {

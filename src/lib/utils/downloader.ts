@@ -1,10 +1,9 @@
-import filenamify from 'filenamify'
-import { serverTimestamp } from './utils'
-import { PassThrough } from 'stream'
-import type { Track } from './types'
 import ytdl from '@distube/ytdl-core'
-const ytSearch = require('youtube-sr').default
-// import fs from 'fs'
+import filenamify from 'filenamify'
+import { PassThrough } from 'stream'
+import ytSearch from 'youtube-sr'
+import type { Track } from './types'
+import { serverTimestamp } from './utils'
 
 // MAIN FUNCTIONS
 export const downloadTrack = async (track: Track, silent = true) => {
@@ -29,8 +28,8 @@ export const downloadTrack = async (track: Track, silent = true) => {
 		const filename = sanitizeString(pathNamify(`${track.name}`) + '.m4a')
 
 		return { buffer, filename }
-	} catch (error) {
-		console.error(`Error downloading track ${track.name}:`, error)
+	} catch (error: any) {
+		console.error(`Error downloading track "${track.name}":`, error.message)
 		throw error
 	}
 }
@@ -49,11 +48,10 @@ const findYtId = async (track: Track) => {
 		}
 		query += ' -instrumental'
 
-		const searchOptions = {
-			limit: track.type === 'track' ? 10 : 3,
-			type: 'video'
-		}
-		const videos = await ytSearch.search(query, searchOptions)
+		const videos = await ytSearch.default.search(query, {
+			type: 'video',
+			limit: track.type === 'track' ? 10 : 3
+		})
 
 		console.log(`${query}, found ${videos.length} results`)
 
@@ -76,7 +74,6 @@ const findYtId = async (track: Track) => {
 
 const downloadYT = async (id: string): Promise<Buffer | undefined> => {
 	try {
-		// const agent = ytdl.createAgent(JSON.parse(String(fs.readFileSync('cookies.json'))))
 		const info = await ytdl.getInfo(`https://www.youtube.com/watch?v=${id}`)
 		const audioFormat = ytdl.chooseFormat(info.formats, {
 			quality: 'highestaudio'

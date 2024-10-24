@@ -26,6 +26,7 @@
 			error = error.message
 		} finally {
 			loading = false
+			url = ''
 		}
 	}
 </script>
