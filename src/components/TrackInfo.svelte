@@ -3,8 +3,12 @@
 	import DownloadTrack from './buttons/DownloadTrack.svelte'
 	import PlayTrack from './buttons/PlayTrack.svelte'
 
-	export let track: Track
-	export let isAlbum: boolean = false
+	interface Props {
+		track: Track
+		isAlbum?: boolean
+	}
+
+	let { track, isAlbum = false }: Props = $props()
 
 	const durationString = `${Math.floor(track.duration_ms / 60000)}:${(
 		(track.duration_ms % 60000) /

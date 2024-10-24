@@ -1,11 +1,8 @@
 import type { Playlist, Track } from '$lib/utils/types'
 import { downloadBlob, getFilenameFromHeaders } from '$lib/utils/utils'
-import { FFmpeg } from '@ffmpeg/ffmpeg'
 import axios from 'axios'
-import { ID3Writer } from 'browser-id3-writer'
 import JSZip from 'jszip'
 import { get, writable } from 'svelte/store'
-import { v4 as uuidv4 } from 'uuid'
 
 interface Downloader {
 	queue: any[]
@@ -15,51 +12,6 @@ interface Downloader {
 	progress: number
 	dialogItem: any | null
 	defaultSpeed: 'slow' | 'fast' | null
-}
-
-let ffmpegInstance: FFmpeg | null = null
-
-const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
-
-const getFFmpeg = async (): Promise<FFmpeg> => {
-	if (!ffmpegInstance || !ffmpegInstance.loaded) {
-		console.log('Loading FFmpeg...')
-		ffmpegInstance = new FFmpeg()
-
-		ffmpegInstance.on('log', ({ message }) => {
-			console.log(message)
-		})
-
-		await ffmpegInstance.load({
-			coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-			wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-			workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
-		})
-	}
-	console.log('FFmpeg Loaded')
-	return ffmpegInstance
-}
-
-async function readFile(file: File): Promise<Uint8Array> {
-	return new Promise((resolve, reject) => {
-		const fileReader = new FileReader()
-
-		fileReader.onload = () => {
-			const { result } = fileReader
-
-			if (result instanceof ArrayBuffer) {
-				resolve(new Uint8Array(result))
-			}
-		}
-		fileReader.readAsArrayBuffer(file)
-	})
-}
-
-export const toBlobURL = async (url: string, mimeType: string): Promise<string> => {
-	const response = await fetch(url)
-	const arrayBuffer = await response.arrayBuffer()
-	const blob = new Blob([arrayBuffer], { type: mimeType })
-	return URL.createObjectURL(blob)
 }
 
 function createDownloadStore() {
@@ -144,16 +96,10 @@ function createDownloadStore() {
 
 		console.log('PLAYLIST DOWNLOAD LOADING FFMPEG...')
 
-		ffmpegInstance = await getFFmpeg()
-
 		const chunkSize = 15
 		const totalChunks = Math.ceil(items.length / chunkSize)
 
 		for (let i = 0; i < totalChunks; i++) {
-			if (!ffmpegInstance.loaded && playlist.speed === 'slow') {
-				ffmpegInstance = await getFFmpeg()
-			}
-
 			const chunkStart = i * chunkSize
 			const chunkEnd = Math.min(chunkStart + chunkSize, items.length)
 			const chunkItems = items.slice(chunkStart, chunkEnd)
@@ -198,85 +144,14 @@ function createDownloadStore() {
 			let buffer = response.data
 			let filename = getFilenameFromHeaders(response.headers)
 
-			if (track.speed === 'slow') {
-				if (!ffmpegInstance) {
-					ffmpegInstance = await getFFmpeg()
-				}
+			// if (track.speed === slow) {
+			// code
+			// }
 
-				buffer = await convert(buffer)
-
-				buffer = await addMetadata(buffer, track)
-				filename = filename.slice(0, -4) + '.mp3'
-			}
 			return { buffer, filename }
 		} catch (error) {
 			console.error('Error in downloadTrack:', error)
 			return { buffer: null, filename: '' }
-		}
-	}
-
-	function pathNamify(path: string) {
-		return path.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, '')
-	}
-
-	async function convert(trackBufferBlob: Blob): Promise<ArrayBuffer | null> {
-		const id = uuidv4()
-		const inputFileName = `/tmp/${id}.m4a`
-		const outputFileName = `/tmp/${id}.mp3`
-		try {
-			if (!ffmpegInstance) {
-				ffmpegInstance = await getFFmpeg()
-			}
-
-			await ffmpegInstance.writeFile(inputFileName, await readFile(trackBufferBlob as File))
-			// prettier-ignore
-			await ffmpegInstance.exec([
-        '-i', inputFileName,
-        '-b:a', '320k',
-        '-ac', '2',
-        '-ar', '32000',
-        outputFileName,
-      ])
-			const data = await ffmpegInstance.readFile(outputFileName)
-
-			// @ts-ignore
-			return data.buffer
-		} catch (error) {
-			console.error('Error in audio conversion:', error)
-			return null
-		} finally {
-			try {
-				await Promise.all([
-					ffmpegInstance!.deleteFile(inputFileName),
-					ffmpegInstance!.deleteFile(outputFileName)
-				])
-			} catch (error) {
-				console.warn('Error during cleanup:', error)
-			}
-		}
-	}
-
-	async function addMetadata(buffer: ArrayBuffer, track: Track) {
-		try {
-			const cover = await fetchCover(track.album.images[0].url)
-			const writer = new ID3Writer(buffer)
-			writer
-				.setFrame('TIT2', track.name)
-				.setFrame('TALB', track.album.name)
-				.setFrame('TRCK', `${track.order || track.track_number}`)
-				.setFrame(
-					'TPE1',
-					track.artists.map((artist) => artist.name)
-				)
-				.setFrame('APIC', {
-					type: 3,
-					data: cover,
-					description: `${track.name} cover`
-				})
-			return writer.addTag()
-		} catch (error) {
-			console.error('Error adding metadata:', error)
-			return null
 		}
 	}
 
@@ -288,6 +163,10 @@ function createDownloadStore() {
 			console.error('Error in fetchCover:', error)
 			return null
 		}
+	}
+
+	function pathNamify(path: string) {
+		return path.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, '')
 	}
 
 	const addDownload = (spotifyItem: Track | Playlist, speed: 'slow' | 'fast') => {

@@ -6,7 +6,7 @@ import type { Track } from './types'
 import { serverTimestamp } from './utils'
 
 // MAIN FUNCTIONS
-export const downloadTrack = async (track: Track, silent = true) => {
+export const downloadTrack = async (track: Track & { speed: 'slow' | 'fast' }, silent = true) => {
 	try {
 		if (!silent && track) {
 			console.log(
@@ -84,7 +84,7 @@ const downloadYT = async (id: string): Promise<Buffer | undefined> => {
 		}
 
 		const audioStream = ytdl.downloadFromInfo(info, { format: audioFormat })
-		const buffer = streamToBuffer(audioStream)
+		const buffer = await streamToBuffer(audioStream)
 
 		return buffer
 	} catch (error) {

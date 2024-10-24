@@ -30,6 +30,10 @@ export const getRequest = async (url: string) => {
 	return response.data
 }
 
+function sortString(a: string, b: string) {
+	return a.localeCompare(b)
+}
+
 export async function getPlaylist(id: string, sort?: SortOption, order?: OrderOption) {
 	try {
 		let playlist = await getRequest(`https://api.spotify.com/v1/playlists/${id}`)
@@ -42,7 +46,56 @@ export async function getPlaylist(id: string, sort?: SortOption, order?: OrderOp
 			next = nextTracks.next
 		}
 
-		playlist.tracks.items = playlist.tracks.items.filter((item: { track: Track }) => item.track)
+		if (sort) {
+			let trackItems = playlist.tracks.items.filter((item: { track: Track }) => item.track)
+			const newOrder = order === 'asc'
+
+			switch (sort) {
+				case 'Custom order':
+					trackItems = newOrder ? trackItems.slice() : trackItems.slice().reverse()
+					break
+				case 'Title':
+					trackItems = trackItems.sort(
+						(a: { track: { name: string } }, b: { track: { name: string } }) =>
+							newOrder
+								? sortString(a.track.name, b.track.name)
+								: sortString(b.track.name, a.track.name)
+					)
+					break
+				case 'Album':
+					trackItems = trackItems.sort((a: { track: Track }, b: { track: Track }) => {
+						const albumComparison = newOrder
+							? sortString(a.track.album.name, b.track.album.name)
+							: sortString(b.track.album.name, a.track.album.name)
+
+						if (albumComparison === 0) {
+							return a.track.track_number - b.track.track_number
+						}
+
+						return albumComparison
+					})
+					break
+				case 'Date added':
+					const sortOrder = newOrder ? 1 : -1
+
+					trackItems = trackItems.sort(
+						(a: { added_at: string | number | Date }, b: { added_at: string | number | Date }) =>
+							sortOrder * (new Date(a.added_at).getTime() - new Date(b.added_at).getTime())
+					)
+					break
+			}
+			playlist.tracks.items = trackItems
+		}
+
+		playlist.tracks.items = playlist.tracks.items
+			.filter((item: { track: Track }) => item.track)
+			.map((item: { track: Track }, idx: number) => ({
+				...item,
+				track: {
+					...item.track,
+					order: idx + 1
+				}
+			}))
 
 		return playlist
 	} catch (error) {

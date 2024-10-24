@@ -1,14 +1,16 @@
-export const downloadBlob = (blob: Blob | null, name: string) => {
-	if (!blob) return null
+export const downloadBlob = (buffer: ArrayBuffer | Blob | null, name: string) => {
+	if (!buffer) return null
 
 	const mimeType = name.endsWith('.m4a') ? 'audio/mp4' : 'audio/mpeg'
+	const blob = buffer instanceof Blob ? buffer : new Blob([buffer], { type: mimeType })
 
-	const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
+	const url = window.URL.createObjectURL(blob)
 	const link = document.createElement('a')
 	link.href = url
 	link.setAttribute('download', name)
 	document.body.appendChild(link)
 	link.click()
+	link.remove()
 	window.URL.revokeObjectURL(url)
 }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Playlist } from '$lib/utils/types'
 
-	export let playlist: Playlist
+	let { playlist }: { playlist: Playlist } = $props()
 </script>
 
 <header

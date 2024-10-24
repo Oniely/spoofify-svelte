@@ -9,8 +9,6 @@
 			<HomeButton />
 			<Search />
 		</div>
-		<div>
-			<slot />
-		</div>
+		<slot />
 	</main>
 </div>
