@@ -4,7 +4,9 @@
 	let { audioUrl }: { audioUrl: string } = $props()
 
 	let isPlaying = $state(false)
-	playerStore.subscribe((state) => (isPlaying = state.playing))
+	playerStore.subscribe((state) => {
+		isPlaying = state.trackId === audioUrl && state.playing
+	})
 
 	function handleClick() {
 		playerStore.togglePlay(audioUrl)

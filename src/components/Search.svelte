@@ -7,10 +7,11 @@
 	let loading = $state(false)
 	let error = $state(null)
 
-	function handleSearch(e: Event) {
+	async function handleSearch(e: SubmitEvent) {
 		e.preventDefault()
 
 		loading = true
+
 		try {
 			const { type, id } = detectSpotifyLink(url)
 			if (!type || !id) {
@@ -18,12 +19,12 @@
 			}
 
 			if (type === 'playlist' || type === 'track' || type === 'album') {
-				goto(`/${type}/${id}`)
+				await goto(`/${type}/${id}`)
 			} else {
 				throw Error(`Spotify ${type}s are not supported at this moment :(`)
 			}
-		} catch (error: any) {
-			error = error.message
+		} catch (err: any) {
+			error = err.message
 		} finally {
 			loading = false
 			url = ''

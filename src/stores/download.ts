@@ -20,10 +20,14 @@ function createDownloadStore() {
 		currentDownload: null,
 		downloadedItems: [],
 		downloading: false,
-		progress: 0,
 		dialogItem: null,
+		progress: 0,
 		defaultSpeed: null
 	})
+
+	const getDefaultSpeed = () => get(store).defaultSpeed
+	const getProgress = () => get(store).progress
+	const getDialogItem = () => get(store).dialogItem
 
 	const download = async () => {
 		const state = get(store)
@@ -215,6 +219,7 @@ function createDownloadStore() {
 
 	return {
 		subscribe: store.subscribe,
+		update: store.update,
 		download,
 		downloadPlaylist,
 		downloadAlbum,
@@ -223,7 +228,10 @@ function createDownloadStore() {
 		addToDownloaded,
 		itemState,
 		openDialog,
-		closeDialog
+		closeDialog,
+		getDefaultSpeed,
+		getProgress,
+		getDialogItem
 	}
 }
 

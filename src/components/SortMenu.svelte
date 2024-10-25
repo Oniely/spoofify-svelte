@@ -3,28 +3,34 @@
 	import { page } from '$app/stores'
 	import { SORT_OPTIONS, type OrderOption, type SortOption } from '$lib/utils/types'
 
-	let searchParams = $derived($page.url.searchParams)
-
 	let isOpen = $state(false)
-	let sortOption: SortOption = $state(searchParams.get('sort') || 'Date added') as SortOption
-	let sortOrder: OrderOption = $state(searchParams.get('order') || 'asc') as OrderOption
+	let sort: SortOption = $state('Date added')
+	let order: OrderOption = $state('asc')
+
+	$effect(() => {
+		sort = ($page.url.searchParams.get('sort') || 'Date added') as SortOption
+		order = ($page.url.searchParams.get('order') || 'asc') as OrderOption
+
+		console.log(sort, order)
+	})
 
 	function toggleDropdown() {
 		isOpen = !isOpen
 	}
 
-	function selectSortOption(option: SortOption) {
-		let newOrder = sortOrder
-		if (sortOption === option) {
-			newOrder = sortOrder === 'asc' ? 'desc' : 'asc'
-			sortOrder = newOrder
+	function selectSortOption(selectedSort: SortOption) {
+		let newOrder: string = order
+
+		if (sort === selectedSort && selectedSort !== 'Custom order') {
+			newOrder = order === 'asc' ? 'desc' : 'asc'
 		} else {
-			sortOption = option
+			newOrder = selectedSort === 'Custom order' ? 'asc' : newOrder
 		}
 
 		const url = new URL(window.location.href)
-		url.searchParams.set('sort', option)
-		url.searchParams.set('order', newOrder as string)
+		url.searchParams.set('sort', selectedSort)
+		url.searchParams.set('order', String(newOrder))
+
 		goto(url.toString(), { replaceState: true, noScroll: true })
 
 		isOpen = false
@@ -36,7 +42,7 @@
 		class="flex items-center gap-1 text-white/50 transition-colors hover:text-white/80"
 		onclick={toggleDropdown}
 	>
-		<span class="flex items-center gap-1 text-sm">{sortOption}</span>
+		<span class="flex items-center gap-1 text-sm">{sort}</span>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -58,17 +64,17 @@
 			class="absolute right-0 z-10 mt-2 w-44 origin-top-right rounded-md border border-white/10 bg-[#0a0a0a] shadow-lg"
 		>
 			<div class="py-1">
-				{#each SORT_OPTIONS as option}
+				{#each SORT_OPTIONS as selectedSort}
 					<button
-						class="flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-accent hover:text-white {sortOption ===
-						option
+						class="flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-accent hover:text-white {sort ===
+						selectedSort
 							? 'bg-primary text-accent'
 							: 'text-white/80'}"
-						onclick={() => selectSortOption(option)}
+						onclick={() => selectSortOption(selectedSort)}
 					>
-						<span>{option}</span>
-						{#if sortOption === option}
-							{#if sortOrder === 'asc'}
+						<span>{selectedSort}</span>
+						{#if sort === selectedSort && sort !== 'Custom order'}
+							{#if order === 'asc'}
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"

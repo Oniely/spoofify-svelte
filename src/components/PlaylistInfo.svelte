@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Playlist } from '$lib/utils/types'
+	import DownloadPlaylist from './buttons/DownloadPlaylist.svelte'
 
 	let { playlist }: { playlist: Playlist } = $props()
 </script>
@@ -30,7 +31,7 @@
 			</p>
 		</div>
 		<div class="flex items-center gap-2.5 text-sm text-white/80">
-			<!-- <DownloadPlaylist {playlist} /> -->
+			<DownloadPlaylist {playlist} />
 			<div class="flex flex-col text-xs">
 				<p>by {playlist.owner?.display_name || playlist.artists[0].name}</p>
 				<p>{playlist.followers?.total || playlist.popularity || 0} likes</p>

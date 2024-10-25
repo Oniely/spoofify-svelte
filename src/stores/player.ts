@@ -42,7 +42,7 @@ function createPlayerStore() {
 	const togglePlay = async (audioUrl: string) => {
 		const state = get(store)
 
-		if (!state.audio && state.trackId !== audioUrl) {
+		if (state.trackId !== audioUrl) {
 			await loadAudio(audioUrl)
 			return
 		}
