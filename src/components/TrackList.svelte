@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { navigating, page } from '$app/stores'
+	import { page } from '$app/stores'
 	import type { OrderOption, SortOption, Track } from '$lib/utils/types'
 	import SortMenu from './SortMenu.svelte'
-	import Spinner from './Spinner.svelte'
 	import TrackInfo from './TrackInfo.svelte'
 
 	interface Props {
@@ -11,16 +10,16 @@
 	}
 
 	let { tracks, isAlbum = false }: Props = $props()
-	let sortedTracks = $state()
+	let sortedTracks = $state(tracks)
+
+	let option = $derived($page.url.searchParams.get('sort') || 'Date added') as SortOption
+	let order = $derived($page.url.searchParams.get('order') || 'asc') as OrderOption
 
 	function sortString(a: string, b: string) {
 		return a.localeCompare(b, undefined, { sensitivity: 'base' })
 	}
 
 	$effect(() => {
-		let option = $derived(($page.url.searchParams.get('sort') as SortOption) || 'Date added')
-		let order = $derived(($page.url.searchParams.get('order') as OrderOption) || 'asc')
-
 		const sortTracks = () => {
 			if (isAlbum) return tracks
 
@@ -75,12 +74,6 @@
 	})
 </script>
 
-<!-- {#if navigating}
-	<div class="fixed inset-0 z-50 flex items-center justify-center bg-white/5 backdrop-blur-md">
-		<Spinner />
-	</div>
-{/if} -->
-
 <div
 	class="flex w-full flex-col gap-5 rounded-xl border border-white/10 bg-white/5 p-5 text-text backdrop-blur-md"
 >
@@ -95,7 +88,7 @@
 	</div>
 	<ol class="flex w-full flex-col gap-3">
 		{#if !isAlbum}
-			{#each tracks.items as item}
+			{#each sortedTracks.items as item}
 				<li>
 					<TrackInfo track={item.track} />
 				</li>

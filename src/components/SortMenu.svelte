@@ -3,13 +3,11 @@
 	import { page } from '$app/stores'
 	import { SORT_OPTIONS, type OrderOption, type SortOption } from '$lib/utils/types'
 
-	$: searchParams = $page.url.searchParams
-	$: initialOption = (searchParams.get('sort') as SortOption) || 'Date added'
-	$: initialOrder = (searchParams.get('order') as OrderOption) || 'asc'
+	let searchParams = $derived($page.url.searchParams)
 
-	let isOpen = false
-	let sortOption: SortOption = initialOption
-	let sortOrder: OrderOption = initialOrder
+	let isOpen = $state(false)
+	let sortOption: SortOption = $state(searchParams.get('sort') || 'Date added') as SortOption
+	let sortOrder: OrderOption = $state(searchParams.get('order') || 'asc') as OrderOption
 
 	function toggleDropdown() {
 		isOpen = !isOpen
@@ -26,7 +24,7 @@
 
 		const url = new URL(window.location.href)
 		url.searchParams.set('sort', option)
-		url.searchParams.set('order', newOrder)
+		url.searchParams.set('order', newOrder as string)
 		goto(url.toString(), { replaceState: true, noScroll: true })
 
 		isOpen = false
