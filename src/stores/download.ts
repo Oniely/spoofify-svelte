@@ -25,10 +25,6 @@ function createDownloadStore() {
 		defaultSpeed: null
 	})
 
-	const getDefaultSpeed = () => get(store).defaultSpeed
-	const getProgress = () => get(store).progress
-	const getDialogItem = () => get(store).dialogItem
-
 	const download = async () => {
 		const state = get(store)
 
@@ -145,8 +141,8 @@ function createDownloadStore() {
 			const response = await axios.post('/api/download/track', track, {
 				responseType: 'blob'
 			})
-			let buffer = response.data
-			let filename = getFilenameFromHeaders(response.headers)
+			const buffer = response.data
+			const filename = getFilenameFromHeaders(response.headers)
 
 			// if (track.speed === slow) {
 			// code
@@ -159,15 +155,15 @@ function createDownloadStore() {
 		}
 	}
 
-	async function fetchCover(url: string) {
-		try {
-			const response = await axios.get(url, { responseType: 'arraybuffer' })
-			return response.data
-		} catch (error) {
-			console.error('Error in fetchCover:', error)
-			return null
-		}
-	}
+	// async function fetchCover(url: string) {
+	// 	try {
+	// 		const response = await axios.get(url, { responseType: 'arraybuffer' })
+	// 		return response.data
+	// 	} catch (error) {
+	// 		console.error('Error in fetchCover:', error)
+	// 		return null
+	// 	}
+	// }
 
 	function pathNamify(path: string) {
 		return path.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, '')
@@ -187,7 +183,7 @@ function createDownloadStore() {
 		}))
 	}
 
-	const itemState = (item: any) => {
+	const itemState = (item: Track | Playlist) => {
 		const state = get(store)
 
 		const downloadedItem = state.downloadedItems.find(
@@ -203,7 +199,7 @@ function createDownloadStore() {
 		return null
 	}
 
-	const openDialog = (item: any) => {
+	const openDialog = (item: Track | Playlist) => {
 		store.update((state) => ({
 			...state,
 			dialogItem: item
@@ -228,10 +224,7 @@ function createDownloadStore() {
 		addToDownloaded,
 		itemState,
 		openDialog,
-		closeDialog,
-		getDefaultSpeed,
-		getProgress,
-		getDialogItem
+		closeDialog
 	}
 }
 

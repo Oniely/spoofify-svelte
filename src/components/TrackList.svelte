@@ -8,11 +8,11 @@
 		tracks: any
 		isAlbum?: boolean
 	}
-
 	let { tracks, isAlbum = false }: Props = $props()
+
 	let sortedTracks = $state(tracks)
 
-	let option = $derived($page.url.searchParams.get('sort') || 'Date added') as SortOption
+	let sort = $derived($page.url.searchParams.get('sort') || 'Date added') as SortOption
 	let order = $derived($page.url.searchParams.get('order') || 'asc') as OrderOption
 
 	function sortString(a: string, b: string) {
@@ -26,7 +26,7 @@
 			let trackItems = [...tracks.items].filter((item: { track: Track }) => item.track)
 			const newOrder = order === 'asc'
 
-			switch (option) {
+			switch (sort) {
 				case 'Custom order':
 					trackItems = newOrder ? trackItems.slice() : trackItems.slice().reverse()
 					break
@@ -83,7 +83,7 @@
 		</p>
 
 		{#if !isAlbum}
-			<SortMenu />
+			<SortMenu {sort} {order} />
 		{/if}
 	</div>
 	<ol class="flex w-full flex-col gap-3">

@@ -24,8 +24,7 @@ export const downloadTrack = async (track: Track & { speed: 'slow' | 'fast' }, s
 			throw new Error(`Failed to download audio for ${track.name} by ${track.artists[0].name}`)
 		}
 
-		const sanitizeString = (str: string) => str.replace(/[^\x00-\x7F]/g, '')
-		const filename = sanitizeString(pathNamify(`${track.name}`) + '.m4a')
+		const filename = pathNamify(`${track.name}`) + '.m4a'
 
 		return { buffer, filename }
 	} catch (error: any) {
@@ -38,9 +37,7 @@ export const downloadTrack = async (track: Track & { speed: 'slow' | 'fast' }, s
 const findYtId = async (track: Track) => {
 	try {
 		let query = `${track.name} ${track.artists[0].name ?? ''}`
-		if (track.explicit) {
-			query += ' explicit'
-		}
+
 		if (track.type === 'track') {
 			query += ' official -cover'
 		}
@@ -50,20 +47,16 @@ const findYtId = async (track: Track) => {
 
 		const videos = await ytSearch.default.search(query, {
 			type: 'video',
-			limit: track.type === 'track' ? 10 : 3
+			limit: track.type === 'track' ? 5 : 3
 		})
 
-		console.log(`Found: ${videos.length} results out of ${track.type === 'track' ? 10 : 3}`)
+		console.log(`Found: ${videos.length} results`)
 
 		let closestVideo = null
 		let closestDuration = Infinity
 
 		for (const video of videos) {
 			const durationDiff = Math.abs(video.duration - track.duration_ms)
-
-			if (video.duration === track.duration_ms) {
-				return video.id
-			}
 
 			if (durationDiff < closestDuration) {
 				closestDuration = durationDiff

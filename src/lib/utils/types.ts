@@ -57,6 +57,7 @@ export interface Track {
 }
 
 export interface Playlist {
+	id: string
 	name: string
 	tracks: {
 		items: { name: string; track: Track }[]

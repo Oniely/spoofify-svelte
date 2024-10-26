@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 	import { detectSpotifyLink } from '$lib/utils/utils'
+	import { Search } from 'lucide-svelte'
 	import Spinner from './Spinner.svelte'
 
 	let url = $state('')
@@ -42,20 +43,7 @@
 		</div>
 	{/if}
 	<button class="rounded p-2 text-white/50 transition-colors" type="submit" aria-label="Search">
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 24 24"
-			stroke-width="2.5"
-			stroke="currentColor"
-			class="size-5"
-		>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-			/>
-		</svg>
+		<Search size={20} strokeWidth={3} />
 	</button>
 	<div class="flex w-full items-center gap-3">
 		<input

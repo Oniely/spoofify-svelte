@@ -2,17 +2,15 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import { SORT_OPTIONS, type OrderOption, type SortOption } from '$lib/utils/types'
+	import { ArrowDown, ArrowUp, List } from 'lucide-svelte'
+
+	interface Props {
+		sort: SortOption
+		order: OrderOption
+	}
+	let { sort, order }: Props = $props()
 
 	let isOpen = $state(false)
-	let sort: SortOption = $state('Date added')
-	let order: OrderOption = $state('asc')
-
-	$effect(() => {
-		sort = ($page.url.searchParams.get('sort') || 'Date added') as SortOption
-		order = ($page.url.searchParams.get('order') || 'asc') as OrderOption
-
-		console.log(sort, order)
-	})
 
 	function toggleDropdown() {
 		isOpen = !isOpen
@@ -43,20 +41,7 @@
 		onclick={toggleDropdown}
 	>
 		<span class="flex items-center gap-1 text-sm">{sort}</span>
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 24 24"
-			stroke-width="1.5"
-			stroke="currentColor"
-			class="size-5"
-		>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
-			/>
-		</svg>
+		<List size={18} />
 	</button>
 
 	{#if isOpen}
@@ -75,35 +60,9 @@
 						<span>{selectedSort}</span>
 						{#if sort === selectedSort && sort !== 'Custom order'}
 							{#if order === 'asc'}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									class="size-5"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"
-									/>
-								</svg>
+								<ArrowUp size={18} />
 							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke-width="1.5"
-									stroke="currentColor"
-									class="size-5"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-									/>
-								</svg>
+								<ArrowDown size={18} />
 							{/if}
 						{/if}
 					</button>
