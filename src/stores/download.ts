@@ -90,7 +90,6 @@ function createDownloadStore() {
 	})
 
 	const downloadPlaylist = async (playlist: Playlist, type: 'Playlist' | 'Album') => {
-		const state = get(store)
 		const items = playlist.tracks.items
 		const zip = new JSZip()
 
@@ -112,7 +111,10 @@ function createDownloadStore() {
 			const downloadPromises = chunkItems.map((item) => {
 				const track: Track | any = type === 'Playlist' ? { ...item.track } : { ...item }
 				return downloadTrack({ ...track, speed: playlist.speed }).then((track) => {
-					state.progress += (1 / playlist.tracks.total) * 100
+					store.update((state) => ({
+						...state,
+						progress: (state.progress += (1 / playlist.tracks.total) * 100)
+					}))
 					return track
 				})
 			})
