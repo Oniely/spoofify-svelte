@@ -1,38 +1,47 @@
-# create-svelte
+## Spoofify-svelte
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+**Spoofify** is a Spotify downloader application that allows users to download tracks or playlists from Spotify using a provided Spotify link. By simply inputting the Spotify link, Spoofify will locate and enable the download of the specified tracks for offline use.
 
-## Creating a project
+### Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Download individual tracks or entire playlists from Spotify
+- User-friendly interface for easy link input and download initiation
+- High-quality audio downloads
+- Supports multiple download formats
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+### Installation
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/yourusername/spoofify.git
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd spoofify
+    ```
+3. Install the required dependencies:
+    ```sh
+    pnpm install
+    ```
+4. Get you Spotify API keys from Spotify:
+    ```sh
+    https://developer.spotify.com/dashboard
+    ```
+5. Create a .env file and add your KEYS: 
+    ```sh
+    CLIENT_ID=***
+    CLIENT_SECRET=***
+    ```
 
-## Developing
+### Usage
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+1. Run the application:
+    ```sh
+    pnpm run dev
+    ```
+2. Enter the Spotify link for the track or playlist you wish to download.
+3. Follow the on-screen prompts to complete your download.
 
-```bash
-npm run dev
+### Contributing
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
