@@ -49,12 +49,15 @@
 						<div class="mt-3 grid grid-cols-2 gap-4">
 							<button
 								onclick={() => handleDownload('slow')}
-								class="group flex flex-col items-center justify-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4 text-white/70 transition-colors hover:text-white"
+								class="group flex flex-col items-center justify-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4 text-white/70 transition-colors hover:text-white disabled:bg-white/5 disabled:text-white/20"
+								disabled
 							>
 								<Turtle size={100} />
 								<div>
-									<p class="text-sm">Slow download</p>
-									<p class="text-xs text-white/50">Metadata, .mp3</p>
+									<!-- <p class="text-sm">Slow download</p>
+									<p class="text-xs text-white/50">Metadata, .mp3</p> -->
+									<p class="text-sm">Not available</p>
+									<p class="text-xs">Still in the works</p>
 								</div>
 							</button>
 							<button

@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private'
 
 import axios from 'axios'
-import type { OrderOption, SortOption, Track } from './types'
+import type { Track } from './types'
 
 export const getToken = async () => {
 	const response = await axios.post(
@@ -30,7 +30,7 @@ export const getRequest = async (url: string) => {
 	return response.data
 }
 
-export async function getPlaylist(id: string, sort?: SortOption, order?: OrderOption) {
+export async function getPlaylist(id: string) {
 	try {
 		let playlist = await getRequest(`https://api.spotify.com/v1/playlists/${id}`)
 
